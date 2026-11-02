@@ -95,6 +95,7 @@ tourismvista/
 │   └── tourism_warehouse.db    # Relational Star Schema warehouse (SQLite fallback)
 │
 ├── services/
+|   |__ __init__.py             # Python package initializer
 │   ├── data_service.py         # CSV loading, KPIs, data dictionary, and trends
 │   ├── warehouse_service.py    # Star Schema DDL, ETL loader, and SQL executor
 │   ├── classification_service.py# Decision Tree model training & evaluation
