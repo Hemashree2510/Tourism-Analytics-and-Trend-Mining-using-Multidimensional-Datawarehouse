@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Travora — Tourism Analytics & Trend Mining{% endblock %}</title>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-wrapper">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-earth-americas"></i>
+                    </div>
+                    <div>
+                        <h1 class="brand-title">Travora</h1>
+                        <span class="brand-subtitle">Explore. Analyze. Discover.</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Analytical Platform</div>
+                <ul class="nav-list">
+                    <li class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                        <a href="{{ url_for('dashboard_page') }}">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'country_analysis' %}active{% endif %}">
+                        <a href="{{ url_for('country_analysis_page') }}">
+                            <i class="fa-solid fa-globe"></i>
+                            <span>Country Analysis</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'trends' %}active{% endif %}">
+                        <a href="{{ url_for('trends_page') }}">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <span>Tourism Trends</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-section-title" style="margin-top: 14px;">Data Mining Models</div>
+                <ul class="nav-list">
+                    <li class="nav-item {% if active_page == 'classification' %}active{% endif %}">
+                        <a href="{{ url_for('classification_page') }}">
+                            <i class="fa-solid fa-sitemap"></i>
+                            <span>Classification</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'clustering' %}active{% endif %}">
+                        <a href="{{ url_for('clustering_page') }}">
+                            <i class="fa-solid fa-users-rays"></i>
+                            <span>Clustering</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'association_rules' %}active{% endif %}">
+                        <a href="{{ url_for('association_rules_page') }}">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Association Rules</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-section-title" style="margin-top: 14px;">Warehouse & Schema</div>
+                <ul class="nav-list">
+                    <li class="nav-item {% if active_page == 'olap' %}active{% endif %}">
+                        <a href="{{ url_for('olap_page') }}">
+                            <i class="fa-solid fa-cubes"></i>
+                            <span>OLAP Analysis</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'warehouse' %}active{% endif %}">
+                        <a href="{{ url_for('warehouse_page') }}">
+                            <i class="fa-solid fa-database"></i>
+                            <span>Data Warehouse</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'data_dictionary' %}active{% endif %}">
+                        <a href="{{ url_for('data_dictionary_page') }}">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                            <span>Data Dictionary</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {% if active_page == 'about' %}active{% endif %}">
+                        <a href="{{ url_for('about_page') }}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>About Project</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-message">
+                    <i class="fa-regular fa-compass" style="margin-right: 4px; color: var(--accent-blue);"></i>
+                    Better insights for a connected world
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="page-title">Tourism Analytics & Trend Mining</h2>
+                    <span class="page-subtitle">Using a Multidimensional Data Warehouse</span>
+                </div>
+                <div class="header-right">
+                    <span class="badge-dataset">
+                        <i class="fa-solid fa-server"></i>
+                        <span>Multidimensional Warehouse</span>
+                    </span>
+                    <span class="badge-time">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="headerTimestamp">October 2026 Academic Evaluation</span>
+                    </span>
+                    <div class="profile-avatar" title="Hemashree G (23MID0092)">
+                        HG
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Body -->
+            <main class="content-body">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

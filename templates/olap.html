@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}OLAP Analysis — TourismVista Analytics{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-cubes" style="color: var(--accent-blue);"></i>
+                Multidimensional OLAP Analysis
+            </h2>
+            <div class="card-subtitle">
+                On-Line Analytical Processing Operations Executed Directly on the Star Schema Data Warehouse
+            </div>
+        </div>
+        <span class="badge badge-medium">Real SQL Execution</span>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+            Execute live multidimensional queries against the <code>fact_tourism</code> table joined with its dimension tables.
+            Inspect the underlying SQL query, parameter bindings, and output tables across five core OLAP operations.
+        </p>
+
+        <!-- OLAP Navigation Tabs -->
+        <div class="tab-nav" style="margin-top: 18px;">
+            <button class="tab-btn active" data-tab="rollup">
+                <i class="fa-solid fa-layer-group" style="margin-right: 6px;"></i>1. Roll-Up
+            </button>
+            <button class="tab-btn" data-tab="drilldown">
+                <i class="fa-solid fa-magnifying-glass-plus" style="margin-right: 6px;"></i>2. Drill-Down
+            </button>
+            <button class="tab-btn" data-tab="slice">
+                <i class="fa-solid fa-scissors" style="margin-right: 6px;"></i>3. Slice
+            </button>
+            <button class="tab-btn" data-tab="dice">
+                <i class="fa-solid fa-dice-d6" style="margin-right: 6px;"></i>4. Dice
+            </button>
+            <button class="tab-btn" data-tab="pivot">
+                <i class="fa-solid fa-table-columns" style="margin-right: 6px;"></i>5. Pivot
+            </button>
+        </div>
+
+        <!-- Dynamic Controls Bar (changes based on active tab) -->
+        <div id="olapControlsContainer" style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 20px;">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- SQL Query Box -->
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 12px; font-weight: 700; color: var(--text-navy); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-code" style="color: var(--accent-blue); margin-right: 6px;"></i>
+                    Executed SQL Query
+                </span>
+                <span id="olapExecutionTime" class="badge badge-medium" style="font-size: 11px;">0.0 ms</span>
+            </div>
+            <pre class="code-box" id="olapSqlCode" style="margin: 0; max-height: 160px; overflow-y: auto;">
+-- SQL statement will appear here...
+            </pre>
+        </div>
+
+        <!-- Results Table Section -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-navy); margin: 0;" id="olapResultTitle">
+                    Query Results
+                </h4>
+                <span id="olapResultCount" style="font-size: 12px; color: var(--text-muted);">0 rows returned</span>
+            </div>
+            <div class="table-responsive" style="border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                <table class="data-table" id="olapTable">
+                    <thead id="olapTableThead">
+                        <!-- Populated by JS -->
+                    </thead>
+                    <tbody id="olapTableTbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/olap.js') }}"></script>
+{% endblock %}

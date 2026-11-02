@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Association Rules — TourismVista Analytics{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-link" style="color: var(--accent-blue);"></i>
+                Tourism Association Rule Mining
+            </h2>
+            <div class="card-subtitle">
+                Discover relationships and transitions between tourist arrival categories using the Apriori Algorithm
+            </div>
+        </div>
+        <span class="badge badge-medium">Unsupervised Association</span>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+            Identifies frequent category co-occurrences and directional transition rules across consecutive reporting periods.
+            Transactions are constructed by pairing each destination's <strong>2022 arrival category</strong> with its 
+            <strong>2023 arrival category</strong> across 17 valid countries. The Apriori algorithm detects frequent patterns and derives robust association rules evaluated by Support, Confidence, and Lift.
+        </p>
+
+        <!-- Academic Methodology & Workflow -->
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-navy); margin: 20px 0 12px;">
+            <i class="fa-solid fa-list-check" style="color: var(--accent-teal); margin-right: 6px;"></i>
+            Apriori Association Mining Workflow
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 1: Cohort Selection</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Select 17 countries having valid arrival values for both 2022 and 2023.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 2: Threshold Categorization</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Convert numeric values into Low (&lt;20M), Medium (20-50M), High (&gt;50M).</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 3: Transaction Synthesis</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Combine each country's 2022 and 2023 categories into a transaction basket.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 4: Boolean Encoding</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Encode transaction baskets using mlxtend's TransactionEncoder.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 5: Frequent Itemsets</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Apply Apriori algorithm with minimum support threshold = 0.10.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 6: Rule Generation & Evaluation</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Filter rules with min confidence = 0.50 and evaluate Lift.</p>
+            </div>
+        </div>
+
+        <!-- Hyperparameter Control Panel -->
+        <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;">
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Minimum Support (s)</label>
+                    <select id="assocMinSupport" class="form-select">
+                        <option value="0.05">0.05 (5%)</option>
+                        <option value="0.10" selected>0.10 (10% - Project Default)</option>
+                        <option value="0.15">0.15 (15%)</option>
+                        <option value="0.20">0.20 (20%)</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Minimum Confidence (c)</label>
+                    <select id="assocMinConfidence" class="form-select">
+                        <option value="0.40">0.40 (40%)</option>
+                        <option value="0.50" selected>0.50 (50% - Project Default)</option>
+                        <option value="0.60">0.60 (60%)</option>
+                        <option value="0.75">0.75 (75%)</option>
+                    </select>
+                </div>
+                <div>
+                    <button id="btnRunAssoc" class="btn btn-primary" style="height: 38px;">
+                        <i class="fa-solid fa-play"></i> Run Association Mining
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rule Explanations & Charts Grid -->
+<div class="dashboard-grid">
+    <!-- Confidence Chart -->
+    <div class="card card-col-8">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-chart-simple" style="color: var(--accent-blue);"></i>
+                Rule Confidence Comparison
+            </h3>
+            <span class="badge badge-medium">Horizontal Bar Chart</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container chart-container-tall">
+                <canvas id="assocRulesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Educational Metric Definitions Panel -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-circle-question" style="color: var(--accent-teal);"></i>
+                Evaluation Metrics Guide
+            </h3>
+        </div>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px;">
+                <strong style="color: var(--text-navy); font-size: 13px;">Support (s)</strong>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    The percentage of total transactions in the database that contain both the antecedent and consequent itemsets.
+                    <br><code style="font-size: 11px; color: var(--accent-blue);">Support(A → B) = P(A ∩ B)</code>
+                </p>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px;">
+                <strong style="color: var(--text-navy); font-size: 13px;">Confidence (c)</strong>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    The conditional probability that a country belongs to the consequent category given that it was in the antecedent category.
+                    <br><code style="font-size: 11px; color: var(--accent-blue);">Confidence(A → B) = P(B | A)</code>
+                </p>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px;">
+                <strong style="color: var(--text-navy); font-size: 13px;">Lift (L)</strong>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    Measures how much more likely the consequent occurs when the antecedent occurs compared to independent chance. Lift > 1 indicates positive association.
+                    <br><code style="font-size: 11px; color: var(--accent-blue);">Lift(A → B) = P(B | A) / P(B)</code>
+                </p>
+            </div>
+
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                *Note: Association indicates statistical co-occurrence and category stability across time; it does not claim direct causality.
+            </p>
+        </div>
+    </div>
+
+    <!-- Association Rules Table -->
+    <div class="card card-col-12">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-table" style="color: var(--accent-lavender);"></i>
+                    Discovered Tourism Association Rules
+                </h3>
+                <div class="card-subtitle">Derived from 17 country transitions between 2022 and 2023</div>
+            </div>
+            <span class="badge badge-high" id="assocRulesCount">6 Rules Generated</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Antecedent (Condition)</th>
+                            <th>Consequent (Result)</th>
+                            <th>Support</th>
+                            <th>Confidence</th>
+                            <th>Lift</th>
+                            <th>Evaluation Takeaway</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assocRulesTbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/association_rules.js') }}"></script>
+{% endblock %}

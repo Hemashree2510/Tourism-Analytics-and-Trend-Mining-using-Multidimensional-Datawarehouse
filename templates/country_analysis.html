@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Country Analysis — TourismVista{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-earth-americas" style="color: var(--accent-blue);"></i>
+                Country-Level Tourism Scorecard
+            </h2>
+            <div class="card-subtitle">
+                Individual Country Profiling across Warehouse Observations and Data Mining Partitions
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <label class="filter-label" style="margin: 0;">Select Country:</label>
+            <select id="countrySelect" class="form-select" style="width: 220px;">
+                <!-- Populated by JS -->
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Country Scorecard KPI Grid -->
+<section class="kpi-grid" style="margin-bottom: 24px;">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">2022 Actual Arrivals</span>
+            <div class="kpi-icon-wrap icon-blue">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="card2022">Loading...</div>
+        <div class="kpi-meta"><span class="trend-note">Actual Kaggle Observation</span></div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">2023 Actual Arrivals</span>
+            <div class="kpi-icon-wrap icon-teal">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="card2023">Loading...</div>
+        <div class="kpi-meta"><span class="trend-note">Actual Kaggle Observation</span></div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">2024 Predicted Demand</span>
+            <div class="kpi-icon-wrap icon-orange">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="card2024">Loading...</div>
+        <div class="kpi-meta"><span class="trend-note">Predicted Measure</span></div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Classification Category</span>
+            <div class="kpi-icon-wrap icon-lavender">
+                <i class="fa-solid fa-sitemap"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="cardCategory" style="font-size: 20px;">Loading...</div>
+        <div class="kpi-meta"><span class="trend-note">Decision Tree Tier</span></div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">K-Means Cluster</span>
+            <div class="kpi-icon-wrap icon-blue">
+                <i class="fa-solid fa-users-rays"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="cardCluster" style="font-size: 20px;">Loading...</div>
+        <div class="kpi-meta"><span class="trend-note">Standardized Volume Tier</span></div>
+    </div>
+</section>
+
+<!-- Country Deep-Dive Grid -->
+<div class="dashboard-grid">
+    <!-- Chart: Country Historical & Forecast Progression -->
+    <div class="card card-col-8">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-chart-column" style="color: var(--accent-blue);"></i>
+                <span id="countryChartTitle">Available Observations</span>
+            </h3>
+            <span class="badge badge-medium">Units: Millions</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container chart-container-tall">
+                <canvas id="countryProgressionChart"></canvas>
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 10px;">
+                *Strict Data Rule: Missing years are displayed as non-existent columns. Values are never interpolated or converted to zero.
+            </p>
+        </div>
+    </div>
+
+    <!-- Country Metadata & World Bank History Card -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-landmark" style="color: var(--accent-teal);"></i>
+                World Bank & Growth Profile
+            </h3>
+        </div>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">World Bank Record</span>
+                <div style="font-size: 20px; font-weight: 700; color: var(--text-navy); margin: 4px 0;" id="wbArrivals">--</div>
+                <div style="font-size: 12px; color: var(--text-secondary);" id="wbYear">Reference Year: --</div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px;">
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">2022 vs 2023 YoY Growth</span>
+                <div style="font-size: 20px; font-weight: 700; color: var(--status-success); margin: 4px 0;" id="yoyChange">--</div>
+                <div style="font-size: 12px; color: var(--text-secondary);" id="yoyExplanation">Requires both valid 2022 and 2023 figures.</div>
+            </div>
+
+            <div class="info-alert info-alert-blue" style="margin-top: auto; margin-bottom: 0;">
+                <i class="fa-solid fa-circle-info" style="color: var(--accent-blue); margin-top: 2px;"></i>
+                <div style="font-size: 12px;">
+                    <strong>Academic Transparency:</strong>
+                    Values are pulled directly from the multidimensional database warehouse.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/country_analysis.js') }}"></script>
+{% endblock %}

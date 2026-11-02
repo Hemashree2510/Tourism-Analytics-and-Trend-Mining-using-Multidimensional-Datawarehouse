@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Clustering — TourismVista Analytics{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-users-rays" style="color: var(--accent-lavender);"></i>
+                Tourism Country Clustering
+            </h2>
+            <div class="card-subtitle">
+                Unsupervised Machine Learning: K-Means Clustering on Standardized Arrival Volumes
+            </div>
+        </div>
+        <span class="badge badge-medium">Unsupervised Learning</span>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+            Discovers natural groupings among countries based on their international tourist arrival patterns.
+            Following the exact academic pipeline, the model standardizes 2023 international tourist arrival figures using 
+            <strong>StandardScaler</strong> and partitions <strong>49 countries</strong> into three distinct clusters using K-Means (random_state=42, n_init=10).
+        </p>
+
+        <!-- Academic Methodology & Workflow -->
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-navy); margin: 20px 0 12px;">
+            <i class="fa-solid fa-list-check" style="color: var(--accent-teal); margin-right: 6px;"></i>
+            Clustering Methodology & Workflow
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-lavender); font-size: 12px;">Step 1: Data Preparation</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Select 49 countries possessing valid 2023 tourist arrivals.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-lavender); font-size: 12px;">Step 2: Feature Selection</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Feature: MostVisited_NumOfArrivals_Millions_2023.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-lavender); font-size: 12px;">Step 3: Standardization</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">StandardScale arrivals to zero mean and unit variance.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-lavender); font-size: 12px;">Step 4: Cluster Assignment</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">KMeans(n_clusters=3, random_state=42, n_init=10).</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-lavender); font-size: 12px;">Step 5: Statistical Summary</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Compute aggregate count, mean, min, and max arrival per cluster.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-lavender); font-size: 12px;">Step 6: Empirical Interpretation</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Interpret clusters from observed statistics rather than assumptions.</p>
+            </div>
+        </div>
+
+        <!-- Hyperparameter Control Panel -->
+        <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;">
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Number of Clusters (k)</label>
+                    <select id="clusterK" class="form-select">
+                        <option value="2">2</option>
+                        <option value="3" selected>3 (Project Specification)</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Random State</label>
+                    <input type="number" id="clusterRandomState" class="form-control" value="42">
+                </div>
+                <div>
+                    <button id="btnRunClustering" class="btn btn-primary" style="height: 38px;">
+                        <i class="fa-solid fa-play"></i> Run Clustering
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Output Visualization & Statistics -->
+<div class="dashboard-grid">
+    <!-- Scatter Plot Card -->
+    <div class="card card-col-8">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i>
+                Cluster Scatter Distribution
+            </h3>
+            <span class="badge badge-medium">Arrivals (Millions)</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container chart-container-tall">
+                <canvas id="clusteringScatterChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Statistics Table -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-chart-pie" style="color: var(--accent-teal);"></i>
+                Cluster Summary Statistics
+            </h3>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="data-table" id="clusterSummaryTable">
+                    <thead>
+                        <tr>
+                            <th>Cluster</th>
+                            <th>Count</th>
+                            <th>Mean (M)</th>
+                            <th>Min (M)</th>
+                            <th>Max (M)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clusterSummaryTbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="padding: 16px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; border-top: 1px solid var(--border-color);">
+                <strong>Cluster Characteristics:</strong>
+                <ul id="clusterInterpretationList" style="margin-left: 16px; margin-top: 6px;">
+                    <!-- Populated by JS -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Country Assignments Table -->
+    <div class="card card-col-12">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-list-ol" style="color: var(--accent-lavender);"></i>
+                    Country-Level Cluster Assignments
+                </h3>
+                <div class="card-subtitle">All 49 countries grouped by assigned cluster</div>
+            </div>
+            <input type="text" id="clusterTableSearch" class="form-control" placeholder="Search country..." style="height: 32px; width: 200px; font-size: 12px;">
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>2023 Arrivals (Millions)</th>
+                            <th>2022 Arrivals (Millions)</th>
+                            <th>Assigned Cluster</th>
+                            <th>Tier Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clusterCountriesTbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/clustering.js') }}"></script>
+{% endblock %}

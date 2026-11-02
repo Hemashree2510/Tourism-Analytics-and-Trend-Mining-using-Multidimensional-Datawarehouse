@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Data Warehouse Architecture — TourismVista{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-database" style="color: var(--accent-blue);"></i>
+                Data Warehouse Architecture & Schema
+            </h2>
+            <div class="card-subtitle">
+                Multidimensional Star Schema Design & ETL Pipeline
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <span class="badge badge-medium">Grain: Country x Year x Tourism Type</span>
+            <button id="btnReloadETL" class="btn btn-outline" style="height: 30px; font-size: 11px; padding: 0 10px;">
+                <i class="fa-solid fa-rotate"></i> Re-run ETL
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+            The TourismVista Data Warehouse implements an academic <strong>Star Schema</strong> architecture designed to support high-performance On-Line Analytical Processing (OLAP) and Data Mining queries. 
+            The central <code>fact_tourism</code> table records international tourist arrival measures connected to four specialized dimension tables.
+        </p>
+
+        <!-- ETL Flow Pipeline Diagram -->
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-navy); margin: 24px 0 14px;">
+            <i class="fa-solid fa-arrows-split-up-and-left" style="color: var(--accent-teal); margin-right: 6px;"></i>
+            End-to-End ETL Pipeline Architecture
+        </h4>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+            <div style="flex: 1; min-width: 140px; text-align: center;">
+                <div style="width: 44px; height: 44px; background: #EFF6FF; color: var(--accent-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 18px;">
+                    <i class="fa-solid fa-file-csv"></i>
+                </div>
+                <strong style="font-size: 13px; color: var(--text-navy);">Kaggle CSV</strong>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">203 rows x 6 columns</p>
+            </div>
+            <i class="fa-solid fa-arrow-right" style="color: #94A3B8;"></i>
+
+            <div style="flex: 1; min-width: 140px; text-align: center;">
+                <div style="width: 44px; height: 44px; background: #F0FDFA; color: var(--accent-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 18px;">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+                <strong style="font-size: 13px; color: var(--text-navy);">Extract (Pandas)</strong>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Data ingestion & types</p>
+            </div>
+            <i class="fa-solid fa-arrow-right" style="color: #94A3B8;"></i>
+
+            <div style="flex: 1; min-width: 140px; text-align: center;">
+                <div style="width: 44px; height: 44px; background: #F5F3FF; color: var(--accent-lavender); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 18px;">
+                    <i class="fa-solid fa-wand-magic"></i>
+                </div>
+                <strong style="font-size: 13px; color: var(--text-navy);">Transform & Clean</strong>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Surrogate key synthesis</p>
+            </div>
+            <i class="fa-solid fa-arrow-right" style="color: #94A3B8;"></i>
+
+            <div style="flex: 1; min-width: 140px; text-align: center;">
+                <div style="width: 44px; height: 44px; background: #FFF7ED; color: var(--accent-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 18px;">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <strong style="font-size: 13px; color: var(--text-navy);">Load to Warehouse</strong>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Star Schema Tables</p>
+            </div>
+            <i class="fa-solid fa-arrow-right" style="color: #94A3B8;"></i>
+
+            <div style="flex: 1; min-width: 140px; text-align: center;">
+                <div style="width: 44px; height: 44px; background: #F0FDF4; color: var(--status-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 18px;">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <strong style="font-size: 13px; color: var(--text-navy);">OLAP & Mining</strong>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Roll-Up, Decision Tree, etc.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Star Schema Interactive Diagram Section -->
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fa-solid fa-diagram-project" style="color: var(--accent-blue);"></i>
+            Star Schema Entity-Relationship Model
+        </h3>
+        <span class="badge badge-high">321 Fact Records Loaded</span>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 24px; align-items: center; justify-content: center; padding: 12px 0;">
+            <!-- Left Dimension Column -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- DIM_Country -->
+                <div style="background: #FFFFFF; border: 2px solid var(--accent-blue-border); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); overflow: hidden;">
+                    <div style="background: #EFF6FF; padding: 10px 14px; border-bottom: 1px solid var(--accent-blue-border); font-weight: 700; color: #1E40AF; font-size: 13px; display: flex; justify-content: space-between;">
+                        <span>DIM_Country</span>
+                        <span class="badge badge-medium">Dimension</span>
+                    </div>
+                    <div style="padding: 12px 14px; font-size: 12px; font-family: monospace;">
+                        <div style="color: #B91C1C; font-weight: 700;">[PK] country_key : INT</div>
+                        <div style="color: var(--text-primary); margin-top: 4px;">country_name : VARCHAR(100)</div>
+                    </div>
+                </div>
+
+                <!-- DIM_Tourism_Type -->
+                <div style="background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); overflow: hidden;">
+                    <div style="background: #F8FAFC; padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-navy); font-size: 13px; display: flex; justify-content: space-between;">
+                        <span>DIM_Tourism_Type</span>
+                        <span class="badge badge-medium">Dimension</span>
+                    </div>
+                    <div style="padding: 12px 14px; font-size: 12px; font-family: monospace;">
+                        <div style="color: #B91C1C; font-weight: 700;">[PK] tourism_type_key : INT</div>
+                        <div style="color: var(--text-primary); margin-top: 4px;">data_type : VARCHAR(50)</div>
+                        <div style="color: var(--text-primary); margin-top: 2px;">actual_or_predicted : VARCHAR(20)</div>
+                        <div style="color: var(--text-primary); margin-top: 2px;">data_source : VARCHAR(100)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central FACT Table -->
+            <div style="background: #FFFFFF; border: 2px solid var(--accent-blue); border-radius: var(--radius-md); box-shadow: var(--shadow-hover); overflow: hidden;">
+                <div style="background: linear-gradient(135deg, #1E3A8A, #2563EB); color: white; padding: 14px 18px; font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fa-solid fa-cube" style="margin-right: 6px;"></i> FACT_Tourism</span>
+                    <span style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px;">Central Fact Table</span>
+                </div>
+                <div style="padding: 16px 18px; font-size: 12.5px; font-family: monospace;">
+                    <div style="color: #B91C1C; font-weight: 700; padding-bottom: 6px; border-bottom: 1px dashed var(--border-color);">
+                        [PK] tourism_key : INT
+                    </div>
+                    <div style="margin: 8px 0; display: flex; flex-direction: column; gap: 4px;">
+                        <div style="color: #2563EB; font-weight: 600;">[FK] country_key → DIM_Country</div>
+                        <div style="color: #2563EB; font-weight: 600;">[FK] time_key → DIM_Time</div>
+                        <div style="color: #2563EB; font-weight: 600;">[FK] tourism_type_key → DIM_Tourism_Type</div>
+                        <div style="color: #2563EB; font-weight: 600;">[FK] worldbank_key → DIM_WorldBank</div>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-color); background: #EFF6FF; border-radius: 6px; padding: 10px;">
+                        <strong style="color: #1E40AF; font-size: 11px; text-transform: uppercase;">Measures:</strong>
+                        <div style="color: #0F172A; font-weight: 700; font-size: 13px; margin-top: 2px;">
+                            tourist_arrivals_millions : DECIMAL(12,3)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Dimension Column -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- DIM_Time -->
+                <div style="background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); overflow: hidden;">
+                    <div style="background: #F8FAFC; padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-navy); font-size: 13px; display: flex; justify-content: space-between;">
+                        <span>DIM_Time</span>
+                        <span class="badge badge-medium">Dimension</span>
+                    </div>
+                    <div style="padding: 12px 14px; font-size: 12px; font-family: monospace;">
+                        <div style="color: #B91C1C; font-weight: 700;">[PK] time_key : INT</div>
+                        <div style="color: var(--text-primary); margin-top: 4px;">year_num : INT</div>
+                        <div style="color: var(--text-primary); margin-top: 2px;">year_category : VARCHAR(30)</div>
+                    </div>
+                </div>
+
+                <!-- DIM_WorldBank -->
+                <div style="background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); overflow: hidden;">
+                    <div style="background: #F8FAFC; padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-weight: 700; color: var(--text-navy); font-size: 13px; display: flex; justify-content: space-between;">
+                        <span>DIM_WorldBank</span>
+                        <span class="badge badge-medium">Dimension</span>
+                    </div>
+                    <div style="padding: 12px 14px; font-size: 12px; font-family: monospace;">
+                        <div style="color: #B91C1C; font-weight: 700;">[PK] worldbank_key : INT</div>
+                        <div style="color: var(--text-primary); margin-top: 4px;">worldbank_data_year : INT</div>
+                        <div style="color: var(--text-primary); margin-top: 2px;">source_name : VARCHAR(100)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DDL Definition Scripts Section -->
+<div class="card card-col-12">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fa-solid fa-terminal" style="color: var(--accent-blue);"></i>
+            Data Definition Language (DDL) Script
+        </h3>
+        <span class="badge badge-medium">SQL Standard / Oracle / MySQL Compatible</span>
+    </div>
+    <div class="card-body">
+        <pre class="code-box" style="height: 220px; overflow-y: auto;">
+-- DIM_COUNTRY
+CREATE TABLE dim_country(
+    country_key INT PRIMARY KEY,
+    country_name VARCHAR(100) NOT NULL
+);
+
+-- DIM_TIME
+CREATE TABLE dim_time(
+    time_key INT PRIMARY KEY,
+    year_num INT NOT NULL,
+    year_category VARCHAR(30) NOT NULL
+);
+
+-- DIM_TOURISMTYPE
+CREATE TABLE dim_tourism_type(
+    tourism_type_key INT PRIMARY KEY,
+    data_type VARCHAR(50) NOT NULL,
+    actual_or_predicted VARCHAR(20) NOT NULL,
+    data_source VARCHAR(100) NOT NULL
+);
+
+-- DIM_WORLDBANK
+CREATE TABLE dim_worldbank(
+    worldbank_key INT PRIMARY KEY,
+    worldbank_data_year INT NOT NULL,
+    source_name VARCHAR(100) NOT NULL
+);
+
+-- FACT_TOURISM
+CREATE TABLE fact_tourism(
+    tourism_key INT PRIMARY KEY,
+    country_key INT,
+    time_key INT,
+    tourism_type_key INT,
+    worldbank_key INT,
+    tourist_arrivals_millions DECIMAL(12,3),
+    CONSTRAINT fk_tourism_country FOREIGN KEY (country_key) REFERENCES dim_country(country_key),
+    CONSTRAINT fk_tourism_time FOREIGN KEY (time_key) REFERENCES dim_time(time_key),
+    CONSTRAINT fk_tourism_type FOREIGN KEY (tourism_type_key) REFERENCES dim_tourism_type(tourism_type_key),
+    CONSTRAINT fk_tourism_worldbank FOREIGN KEY (worldbank_key) REFERENCES dim_worldbank(worldbank_key)
+);
+        </pre>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('btnReloadETL').addEventListener('click', async () => {
+    const btn = document.getElementById('btnReloadETL');
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Executing ETL...`;
+    try {
+        const res = await fetch('/api/warehouse/etl/run', { method: 'POST' });
+        const data = await res.json();
+        alert(data.message || 'ETL executed successfully!');
+    } catch (err) {
+        alert('ETL error: ' + err);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Re-run ETL`;
+    }
+});
+</script>
+{% endblock %}

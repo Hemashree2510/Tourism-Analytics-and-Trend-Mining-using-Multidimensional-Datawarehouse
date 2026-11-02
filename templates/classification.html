@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Classification — TourismVista Analytics{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-sitemap" style="color: var(--accent-blue);"></i>
+                Tourism Arrival Classification
+            </h2>
+            <div class="card-subtitle">
+                Supervised Machine Learning: Decision Tree Classifier (CART Algorithm)
+            </div>
+        </div>
+        <span class="badge badge-medium">Supervised Learning</span>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+            Classifies sovereign destinations into <strong>Low</strong> (&lt;20M), <strong>Medium</strong> (20M–50M), and <strong>High</strong> (&gt;50M) tourist arrival categories. 
+            The model uses the preceding year's actual tourist arrivals (<strong>2022 arrivals</strong>) as input features to predict the subsequent target arrival tier (<strong>2023 arrival category</strong>).
+        </p>
+
+        <!-- Limitation Banner -->
+        <div class="info-alert info-alert-warning" style="margin-top: 16px;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 18px; margin-top: 2px;"></i>
+            <div>
+                <strong>Academic Data Constraint Notice:</strong>
+                <p style="font-size: 12.5px; margin-top: 2px;">
+                    The evaluation uses only four test records out of 17 mutually complete records. Results are preliminary and may not generalize to a larger set of countries.
+                </p>
+            </div>
+        </div>
+
+        <!-- 9-Step Project Workflow -->
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-navy); margin: 20px 0 12px;">
+            <i class="fa-solid fa-list-check" style="color: var(--accent-teal); margin-right: 6px;"></i>
+            Academic Methodology & Workflow
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 1: Dataset Loading</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Load country names and arrival columns using Pandas.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 2: Category Definition</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Derive Low (&lt;20M), Medium (20-50M), High (&gt;50M) thresholds.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 3: Missing Value Cleaning</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Retain records having both 2022 and 2023 figures (17 countries).</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 4: Feature Selection</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Set X = 2022 Tourist Arrivals (Millions).</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 5: Target Definition</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Set y = 2023 Tourism Category (Categorical string).</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 6: Train/Test Partition</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">80% training (13 records) and 20% testing (4 records), stratified.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 7: Decision Tree Fitting</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Fit DecisionTreeClassifier with max_depth=3, random_state=42.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 8: Prediction</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Predict categories for the 4 unseen test countries.</p>
+            </div>
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px;">
+                <strong style="color: var(--accent-blue); font-size: 12px;">Step 9: Model Evaluation</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Calculate accuracy (75%), confusion matrix, and precision/recall.</p>
+            </div>
+        </div>
+
+        <!-- Hyperparameter Control Panel -->
+        <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;">
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Max Depth</label>
+                    <select id="clfMaxDepth" class="form-select">
+                        <option value="2">2 (Underfitting)</option>
+                        <option value="3" selected>3 (Project Default)</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Test Size Ratio</label>
+                    <select id="clfTestSize" class="form-select">
+                        <option value="0.2" selected>0.20 (80/20 Split)</option>
+                        <option value="0.25">0.25 (75/25 Split)</option>
+                        <option value="0.3">0.30 (70/30 Split)</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="min-width: 140px;">
+                    <label class="filter-label">Random State</label>
+                    <input type="number" id="clfRandomState" class="form-control" value="42">
+                </div>
+                <div>
+                    <button id="btnRunClf" class="btn btn-primary" style="height: 38px;">
+                        <i class="fa-solid fa-play"></i> Run Classification
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Evaluation Metrics & Outputs Grid -->
+<div class="dashboard-grid">
+    <!-- Model Summary KPI Card -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-gauge-high" style="color: var(--accent-blue);"></i>
+                Model Evaluation Summary
+            </h3>
+        </div>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+                <span style="font-size: 12px; color: var(--text-muted);">Model Algorithm</span>
+                <div style="font-size: 16px; font-weight: 700; color: var(--text-navy);" id="clfModelName">DecisionTreeClassifier</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                <div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Valid Records</span>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);" id="clfValidCount">17</div>
+                </div>
+                <div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Train / Test Split</span>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);" id="clfSplit">13 / 4</div>
+                </div>
+                <div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Accuracy</span>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--status-success);" id="clfAccuracy">75.0%</div>
+                </div>
+            </div>
+            <div style="background: var(--accent-blue-light); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: #1E40AF;">
+                <i class="fa-solid fa-check-double" style="margin-right: 6px;"></i>
+                <span id="clfRatio">3 out of 4 test records correctly classified</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confusion Matrix Card -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-table-cells" style="color: var(--accent-teal);"></i>
+                Confusion Matrix
+            </h3>
+            <span class="badge badge-medium">Test Set</span>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                <div id="confusionMatrixContainer" style="width: 100%; max-width: 280px;">
+                    <!-- Rendered by JS -->
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 12px; text-align: center;">
+                    Rows represent Actual Categories, Columns represent Predictions.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decision Tree Logic / Rules -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-code-branch" style="color: var(--accent-lavender);"></i>
+                Decision Tree Split Rules
+            </h3>
+        </div>
+        <div class="card-body">
+            <pre class="code-box" id="clfTreeRules" style="font-size: 11.5px; height: 180px; overflow-y: auto;">
+|--- 2022_Arrivals_Millions <= 44.57
+|   |--- 2022_Arrivals_Millions <= 17.15
+|   |   |--- class: Low Tourism
+|   |--- 2022_Arrivals_Millions >  17.15
+|   |   |--- class: Medium Tourism
+|--- 2022_Arrivals_Millions >  44.57
+|   |--- class: High Tourism
+            </pre>
+        </div>
+    </div>
+
+    <!-- Test Records Comparison Table -->
+    <div class="card card-col-12">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-clipboard-check" style="color: var(--accent-blue);"></i>
+                Actual vs Predicted Test Records
+            </h3>
+            <span class="badge badge-high">Evaluation Output</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>2022 Arrivals (Input Feature)</th>
+                            <th>2023 Arrivals (Reference)</th>
+                            <th>Actual Category</th>
+                            <th>Predicted Category</th>
+                            <th>Outcome</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clfTestResultsTbody">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/classification.js') }}"></script>
+{% endblock %}

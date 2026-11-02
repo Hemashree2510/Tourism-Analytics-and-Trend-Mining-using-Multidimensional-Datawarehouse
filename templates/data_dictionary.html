@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Data Dictionary — Travora{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-book-bookmark" style="color: var(--accent-blue);"></i>
+                Warehouse Data Dictionary
+            </h2>
+            <div class="card-subtitle">
+                Schema Metadata, Data Types, Warehouse Roles, and Missing Value Analysis
+            </div>
+        </div>
+        <input type="text" id="dictSearch" class="form-control" placeholder="Search attributes..." style="height: 32px; width: 220px; font-size: 12px;">
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+            The original Kaggle international tourism dataset encompasses <strong>203 rows</strong> and <strong>6 columns</strong>. 
+            The schema clearly delineates dimensions, factual measures, predictive models, and historical reference observations. 
+            All missing value statistics below are dynamically derived from the active dataset.
+        </p>
+
+        <div class="table-responsive" style="border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+            <table class="data-table" id="dataDictTable">
+                <thead>
+                    <tr>
+                        <th>Attribute Name</th>
+                        <th>Data Type</th>
+                        <th>Description</th>
+                        <th>Warehouse Role</th>
+                        <th>Valid Count</th>
+                        <th>Missing Count</th>
+                        <th>Coverage (%)</th>
+                        <th>Sample Values</th>
+                    </tr>
+                </thead>
+                <tbody id="dictTbody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch('/api/data-dictionary');
+        const data = await res.json();
+        const tbody = document.getElementById('dictTbody');
+        const searchInput = document.getElementById('dictSearch');
+
+        function renderRows(attrs) {
+            tbody.innerHTML = '';
+            attrs.forEach(a => {
+                const tr = document.createElement('tr');
+                const coverage = ((a.valid_count / data.total_rows) * 100).toFixed(1);
+                
+                let roleBadge = 'badge-medium';
+                if (a.role.includes('Dimension')) roleBadge = 'badge-high';
+                else if (a.role.includes('Predicted')) roleBadge = 'badge-low';
+
+                tr.innerHTML = `
+                    <td><code style="color: var(--accent-blue); font-weight: 700; font-size: 12px;">${a.attribute_name}</code></td>
+                    <td><span style="font-size: 12px; color: var(--text-secondary);">${a.data_type}</span></td>
+                    <td>${a.description}</td>
+                    <td><span class="badge ${roleBadge}">${a.role}</span></td>
+                    <td><strong>${a.valid_count}</strong></td>
+                    <td><span style="color: ${a.missing_count > 0 ? '#B91C1C' : '#15803D'}; font-weight: 600;">${a.missing_count}</span></td>
+                    <td>${coverage}%</td>
+                    <td style="font-size: 12px; color: var(--text-muted);">${a.sample_value}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        renderRows(data.attributes);
+
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            const filtered = data.attributes.filter(a => 
+                a.attribute_name.toLowerCase().includes(q) || 
+                a.description.toLowerCase().includes(q) ||
+                a.role.toLowerCase().includes(q)
+            );
+            renderRows(filtered);
+        });
+
+    } catch (err) {
+        console.error("Error loading data dictionary:", err);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Tourism Trends — TourismVista Analytics{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-arrow-trend-up" style="color: var(--accent-blue);"></i>
+                International Tourism Trends & Growth Dynamics
+            </h2>
+            <div class="card-subtitle">
+                Longitudinal Analysis, Year-over-Year Volatility, and Forecast Projections
+            </div>
+        </div>
+        <span class="badge badge-medium">Sample Size: 17 Common Destinations</span>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6;">
+            Analyzes macro trends in international arrivals. Note that time-series completeness varies across reporting authorities. 
+            Growth comparisons are strictly limited to countries with valid observations across both target periods to guarantee mathematical validity.
+        </p>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Top Growth Countries Chart -->
+    <div class="card card-col-8">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i>
+                    Country-Level Year-over-Year Absolute Change (2022 to 2023)
+                </h3>
+                <div class="card-subtitle">Absolute difference in millions (n = 17 common countries)</div>
+            </div>
+            <span class="badge badge-high">Valid Pairs Only</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container chart-container-tall">
+                <canvas id="chartYoYDifferences"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Breakdown Card -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fa-solid fa-chart-pie" style="color: var(--accent-teal);"></i>
+                2023 Tier Distribution
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="chart-container chart-container-tall">
+                <canvas id="chartCategoryDist"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2024 Predicted Demand Leaders -->
+    <div class="card card-col-12">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-orange);"></i>
+                    Top 15 Countries by 2024 Predicted Arrivals
+                </h3>
+                <div class="card-subtitle">Forward-looking predictive indicators (Units: Millions)</div>
+            </div>
+            <span class="badge badge-low">Forecast Model</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="data-table" id="tablePredictedLeaders">
+                    <thead>
+                        <tr>
+                            <th>Forecast Rank</th>
+                            <th>Country</th>
+                            <th>2024 Predicted (M)</th>
+                            <th>2023 Actual (M)</th>
+                            <th>2022 Actual (M)</th>
+                            <th>Data Classification</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyPredictedLeaders">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/trends.js') }}"></script>
+{% endblock %}

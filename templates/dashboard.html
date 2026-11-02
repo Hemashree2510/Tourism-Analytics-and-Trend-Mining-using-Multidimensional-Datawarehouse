@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Travora Analytics{% endblock %}
+
+{% block content %}
+<!-- Global Filter Panel -->
+<section class="filter-panel">
+    <div class="filter-grid">
+        <div class="filter-group">
+            <label class="filter-label" for="filterYear">
+                <i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>Observation Year
+            </label>
+            <select id="filterYear" class="form-select">
+                <option value="All">All Observation Years</option>
+                <option value="2023" selected>2023 (Actual Arrivals - 49 Records)</option>
+                <option value="2022">2022 (Actual Arrivals - 20 Records)</option>
+                <option value="2024">2024 (Predicted Arrivals - 50 Records)</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label class="filter-label" for="filterCountry">
+                <i class="fa-solid fa-flag" style="margin-right: 4px;"></i>Country Scope
+            </label>
+            <select id="filterCountry" class="form-select">
+                <option value="All">All Countries (203 available)</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label class="filter-label" for="filterDataType">
+                <i class="fa-solid fa-layer-group" style="margin-right: 4px;"></i>Tourism Data Type
+            </label>
+            <select id="filterDataType" class="form-select">
+                <option value="All">All Data Types</option>
+                <option value="Actual">Actual Arrivals (2022, 2023)</option>
+                <option value="Predicted">Predicted Arrivals (2024)</option>
+                <option value="World Bank">World Bank Historical</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label class="filter-label" for="filterCategory">
+                <i class="fa-solid fa-tags" style="margin-right: 4px;"></i>Arrival Category
+            </label>
+            <select id="filterCategory" class="form-select">
+                <option value="All">All Arrival Categories</option>
+                <option value="High Tourism">High Tourism (> 50M)</option>
+                <option value="Medium Tourism">Medium Tourism (20M - 50M)</option>
+                <option value="Low Tourism">Low Tourism (< 20M)</option>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button id="btnApplyFilters" class="btn btn-primary">
+                <i class="fa-solid fa-filter"></i> Apply Filters
+            </button>
+            <button id="btnResetFilters" class="btn btn-outline" title="Reset all filters">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- KPI Cards -->
+<section class="kpi-grid">
+    <!-- Card 1: Total Countries -->
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Countries in Dataset</span>
+            <div class="kpi-icon-wrap icon-blue">
+                <i class="fa-solid fa-globe"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="kpiTotalCountries">203</div>
+        <div class="kpi-meta">
+            <span class="trend-note">Unique territories in Kaggle dataset</span>
+        </div>
+    </div>
+
+    <!-- Card 2: Countries with 2023 Data -->
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Countries with 2023 Data</span>
+            <div class="kpi-icon-wrap icon-teal">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="kpiCountries2023">49</div>
+        <div class="kpi-meta">
+            <span class="trend-note">Valid reported arrival records for 2023</span>
+        </div>
+    </div>
+
+    <!-- Card 3: Highest Arrival Country -->
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Highest Arrival Country</span>
+            <div class="kpi-icon-wrap icon-lavender">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="kpiHighestCountry">France</div>
+        <div class="kpi-meta">
+            <span class="trend-up" id="kpiHighestValue">100.0 M</span>
+            <span class="trend-note">(2023 international arrivals)</span>
+        </div>
+    </div>
+
+    <!-- Card 4: 2022-2023 Comparison -->
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">2022–2023 Comparison</span>
+            <div class="kpi-icon-wrap icon-blue">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="kpiYoYGrowth">+22.5%</div>
+        <div class="kpi-meta">
+            <span class="trend-up" id="kpiYoYNote">17 comparable countries</span>
+        </div>
+    </div>
+
+    <!-- Card 5: 2024 Predicted Arrivals -->
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">2024 Predicted Arrivals</span>
+            <div class="kpi-icon-wrap icon-orange">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+        </div>
+        <div class="kpi-value" id="kpiPredictedTotal">1,205.1 M</div>
+        <div class="kpi-meta">
+            <span class="trend-note" id="kpiPredictedCount">Across 50 forecast countries</span>
+        </div>
+    </div>
+</section>
+
+<!-- Main Visualizations Grid -->
+<div class="dashboard-grid">
+    <!-- Chart 1: Global Tourism Trend -->
+    <div class="card card-col-6">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i>
+                    Tourism Arrivals by Year
+                </h3>
+                <div class="card-subtitle">Separate annual actuals vs predicted totals (Units: Millions)</div>
+            </div>
+            <span class="badge badge-medium">Annual Series</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="chartArrivalTrend"></canvas>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+                Note: Non-interpolated yearly totals. 2022 (20 countries), 2023 (49 countries), 2024 (50 predicted countries). Missing years are not fabricated.
+            </p>
+        </div>
+    </div>
+
+    <!-- Map: Geographic Distribution -->
+    <div class="card card-col-6">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-map-location-dot" style="color: var(--accent-teal);"></i>
+                    Geographical Tourism Map (2023 Arrivals)
+                </h3>
+                <div class="card-subtitle">Interactive global distribution with arrival bubbles</div>
+            </div>
+            <span class="badge badge-high">OpenStreetMap</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div id="tourismMap" style="height: 320px; width: 100%; border-radius: 0 0 var(--radius-md) var(--radius-md);"></div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Top Countries Bar Chart -->
+    <div class="card card-col-6">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-ranking-star" style="color: var(--accent-blue);"></i>
+                    Top Countries by Tourist Arrivals (2023)
+                </h3>
+                <div class="card-subtitle">Top 10 destinations in millions of international arrivals</div>
+            </div>
+            <span class="badge badge-medium">Descending Order</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="chartTopCountries"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Year-Wise Comparison (2022 vs 2023) -->
+    <div class="card card-col-6">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-code-compare" style="color: var(--accent-lavender);"></i>
+                    2022 vs 2023 Country Comparison
+                </h3>
+                <div class="card-subtitle">Side-by-side arrival volume for 17 comparable countries (Millions)</div>
+            </div>
+            <span class="badge badge-low">17 Common Countries</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="chartComparison"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 4: Tourism Arrival Categories Doughnut -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-chart-pie" style="color: var(--accent-teal);"></i>
+                    Tourism Arrival Categories
+                </h3>
+                <div class="card-subtitle">Thresholds: Low (<20M), Medium (20–50M), High (>50M)</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="chartCategoryDoughnut"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 5: K-Means Country Clusters Scatter Plot -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-cubes-stacked" style="color: var(--accent-lavender);"></i>
+                    Country Clusters — K-Means
+                </h3>
+                <div class="card-subtitle">Arrival volume clusters (StandardScaler, k=3, random_state=42)</div>
+            </div>
+            <a href="{{ url_for('clustering_page') }}" class="btn btn-outline" style="height: 28px; padding: 0 10px; font-size: 11px;">
+                Details <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="chartClusters"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 7: World Bank Historical Data -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-building-columns" style="color: var(--accent-orange);"></i>
+                    Historical Arrivals — World Bank
+                </h3>
+                <div class="card-subtitle">Aggregated historical observations by reported data year</div>
+            </div>
+            <span class="badge badge-medium">1998–2020</span>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="chartWorldBank"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lower Section: Table & Academic Key Insights -->
+<div class="dashboard-grid" style="margin-top: 4px;">
+    <!-- Top Countries Table -->
+    <div class="card card-col-8">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-table-list" style="color: var(--accent-blue);"></i>
+                    Top Countries by Tourist Arrivals
+                </h3>
+                <div class="card-subtitle">Comprehensive data warehouse records with arrivals in millions</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="tableSearch" class="form-control" placeholder="Search country..." style="height: 32px; width: 180px; font-size: 12px;">
+            </div>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+                <table class="data-table" id="topCountriesTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Country</th>
+                            <th>2022 Arrivals (M)</th>
+                            <th>2023 Arrivals (M)</th>
+                            <th>2024 Pred. (M)</th>
+                            <th>Category</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topCountriesTbody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Insights & Academic Findings -->
+    <div class="card card-col-4">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">
+                    <i class="fa-solid fa-lightbulb" style="color: var(--status-warning);"></i>
+                    Key Analytical Insights
+                </h3>
+                <div class="card-subtitle">Multidimensional Data Mining Synthesis</div>
+            </div>
+        </div>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="info-alert info-alert-blue" style="margin-bottom: 0;">
+                <i class="fa-solid fa-circle-check" style="color: var(--accent-blue); margin-top: 2px;"></i>
+                <div>
+                    <strong>France Leads Global Arrivals:</strong>
+                    <p style="font-size: 12px; margin-top: 2px;">France captured 100.0M international arrivals in 2023, followed by Spain (85.17M) and the United States (66.48M).</p>
+                </div>
+            </div>
+
+            <div class="info-alert info-alert-blue" style="margin-bottom: 0;">
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-teal); margin-top: 2px;"></i>
+                <div>
+                    <strong>Consistent Post-2022 Recovery:</strong>
+                    <p style="font-size: 12px; margin-top: 2px;">The 17 countries with valid 2022 and 2023 data experienced an aggregate YoY growth rate of +22.5%, moving from 534.02M to 654.30M.</p>
+                </div>
+            </div>
+
+            <div class="info-alert info-alert-blue" style="margin-bottom: 0;">
+                <i class="fa-solid fa-sitemap" style="color: var(--accent-lavender); margin-top: 2px;"></i>
+                <div>
+                    <strong>Decision Tree Classification:</strong>
+                    <p style="font-size: 12px; margin-top: 2px;">Predicting 2023 category from 2022 arrivals achieved 75% accuracy (3 out of 4 test records correctly classified). Check model details on the Classification page.</p>
+                </div>
+            </div>
+
+            <div class="info-alert info-alert-blue" style="margin-bottom: 0;">
+                <i class="fa-solid fa-users-rays" style="color: var(--accent-orange); margin-top: 2px;"></i>
+                <div>
+                    <strong>K-Means 3-Cluster Partition:</strong>
+                    <p style="font-size: 12px; margin-top: 2px;">Standardized 2023 arrivals partition into 4 Global Mega-Hubs (mean 77.22M), 14 Major Destinations (mean 27.92M), and 31 Emerging Destinations (mean 7.82M).</p>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; padding-top: 8px;">
+                <a href="{{ url_for('trends_page') }}" class="btn btn-primary" style="width: 100%;">
+                    <i class="fa-solid fa-arrow-trend-up"></i> Explore Complete Tourism Trends
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

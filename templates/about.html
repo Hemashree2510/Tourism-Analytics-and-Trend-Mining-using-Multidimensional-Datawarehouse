@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}About Project — TourismVista{% endblock %}
+
+{% block content %}
+<div class="card card-col-12" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">
+                <i class="fa-solid fa-graduation-cap" style="color: var(--accent-blue);"></i>
+                Academic Project Documentation & Overview
+            </h2>
+            <div class="card-subtitle">
+                Course: Data Warehousing and Data Mining (CSI3010) — Lab Project
+            </div>
+        </div>
+        <span class="badge badge-high">Academic Year 2026</span>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Student Researcher</span>
+                <div style="font-size: 17px; font-weight: 700; color: var(--text-navy); margin-top: 4px;">HEMASHREE G</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">Register Number: <strong>23MID0092</strong></div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Faculty Mentor</span>
+                <div style="font-size: 17px; font-weight: 700; color: var(--text-navy); margin-top: 4px;">Prof. Devipriya</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">Slot: <strong>L19 + L20</strong></div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 16px;">
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Platform Architecture</span>
+                <div style="font-size: 17px; font-weight: 700; color: var(--text-navy); margin-top: 4px;">TourismVista</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">Python Flask + SQLAlchemy + MySQL / SQLite</div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text-navy); margin-bottom: 12px;">
+            <i class="fa-solid fa-bullseye" style="color: var(--accent-teal); margin-right: 6px;"></i>
+            Project Objectives
+        </h3>
+        <ol style="margin-left: 20px; line-height: 1.8; color: var(--text-secondary); font-size: 13.5px;">
+            <li><strong>Multidimensional Warehouse Design:</strong> Architect a clean Star Schema comprising a centralized <code>fact_tourism</code> table connected to <code>dim_country</code>, <code>dim_time</code>, <code>dim_tourism_type</code>, and <code>dim_worldbank</code>.</li>
+            <li><strong>Robust ETL Engineering:</strong> Extract raw international tourism figures from Kaggle CSV, clean missing observations without fabricating zeroes, transform data structures, synthesize surrogate keys, and load into the relational warehouse.</li>
+            <li><strong>OLAP Multidimensional Analysis:</strong> Formulate and execute standard On-Line Analytical Processing queries (Roll-Up, Drill-Down, Slice, Dice, Pivot) to view aggregate and drilled-down slices of tourist arrivals.</li>
+            <li><strong>Supervised Classification:</strong> Train a Decision Tree (CART) classifier to categorize destinations into Low (&lt;20M), Medium (20–50M), and High (&gt;50M) tourist arrival tiers based on prior-year volume.</li>
+            <li><strong>Unsupervised K-Means Clustering:</strong> Cluster standardized 2023 international arrival volumes into three natural tiers (Global Mega-Hubs, Major Destinations, and Developing Destinations).</li>
+            <li><strong>Apriori Association Rule Mining:</strong> Identify directional category stability and transition patterns between 2022 and 2023 arrival categories using Support, Confidence, and Lift metrics.</li>
+            <li><strong>Interactive Academic Web Dashboard:</strong> Deliver a full-stack, responsive, and aesthetically refined analytical dashboard for researchers and stakeholders.</li>
+        </ol>
+
+        <!-- Methodology Flowchart -->
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text-navy); margin: 28px 0 12px;">
+            <i class="fa-solid fa-route" style="color: var(--accent-lavender); margin-right: 6px;"></i>
+            Compact Methodology Flow
+        </h3>
+        <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 18px; text-align: center; font-family: monospace; font-size: 13px; color: var(--text-navy);">
+            Kaggle CSV Dataset (203 rows x 6 cols) <br>
+            ↓ <br>
+            Python Pandas ETL Extraction & Transformation <br>
+            ↓ <br>
+            Multidimensional Star Schema Data Warehouse (MySQL / SQLite) <br>
+            ↓ <br>
+            OLAP Queries (Roll-Up, Drill-Down, Slice, Dice, Pivot) <br>
+            ↓ <br>
+            Data Mining Models (Decision Tree 75% Acc | K-Means k=3 | Apriori Min-Conf 0.5) <br>
+            ↓ <br>
+            TourismVista Interactive Web Dashboard (Flask + Chart.js + Leaflet)
+        </div>
+    </div>
+</div>
+{% endblock %}
